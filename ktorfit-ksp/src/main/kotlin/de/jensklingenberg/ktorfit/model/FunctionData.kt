@@ -1,6 +1,7 @@
 package de.jensklingenberg.ktorfit.model
 
 import KtorfitProcessor
+import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.squareup.kotlinpoet.FunSpec
@@ -89,9 +90,8 @@ fun KSFunctionDeclaration.toFunctionData(
     val typeData = getMyType(
         resolvedFunctionReturnTypeName.removeWhiteSpaces(),
         imports,
-        packageName,
-        KtorfitProcessor.ktorfitResolver
-    )
+        packageName
+    ) { KtorfitProcessor.ktorfitResolver.getClassDeclarationByName(it) }
 
     val returnType = ReturnTypeData(
         resolvedFunctionReturnTypeName,
@@ -187,7 +187,7 @@ fun KSFunctionDeclaration.toFunctionData(
                 logger.error(KtorfitError.NON_BODY_HTTP_METHOD_CANNOT_CONTAIN_BODY, funcDeclaration)
             }
 
-            if (functionAnnotationList.any { it is Multipart }) {
+            if (functionAnnotationList.anyInstance<Multipart>()) {
                 logger.error(
                     KtorfitError.MULTIPART_CAN_ONLY_BE_SPECIFIED_ON_HTTPMETHODS,
                     funcDeclaration
@@ -258,4 +258,8 @@ fun KSFunctionDeclaration.toFunctionData(
         functionAnnotationList,
         firstHttpMethodAnnotation
     )
+}
+
+private inline fun <reified T> MutableList<*>.anyInstance(): Boolean {
+    return this.filterIsInstance<T>().isNotEmpty()
 }
