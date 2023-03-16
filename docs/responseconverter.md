@@ -10,8 +10,8 @@ But now you want to directly wrap your comment list in your data holder class e.
 
 ```kotlin
 sealed class MyOwnResponse<T> {
-    data class Success<T>(val data: T) : Response<T>()
-    class Error(val ex:Throwable) : Response<Nothing>()
+    data class Success<T>(val data: T) : MyOwnResponse<T>()
+    class Error(val ex:Throwable) : MyOwnResponse<Nothing>()
 
     companion object {
         fun <T> success(data: T) = Success(data)
