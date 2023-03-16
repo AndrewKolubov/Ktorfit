@@ -24,7 +24,7 @@ To enable that, you have to implement a ResponseConverter. This class will be us
 inside your wrapper class.
 
 ```kotlin
-class MyOwnResponseConverter : ResponseConverter {
+class MyOwnResponseConverter : SuspendResponseConverter {
 
     override suspend fun <RequestType> wrapResponse(
         typeData: TypeData,
